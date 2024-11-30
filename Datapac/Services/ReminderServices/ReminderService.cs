@@ -2,7 +2,7 @@
 using Example.Domain.DTOs.ReminderDTOs;
 using System.Text;
 
-namespace Example.Services.BorrowingServices
+namespace Example.Services.ReminderServices
 {
     public class ReminderService(ILogger<ReminderService> logger, IServiceScopeFactory serviceScopeFactory) : BackgroundService
     {
@@ -25,7 +25,7 @@ namespace Example.Services.BorrowingServices
                     {
                         logger.LogInformation($"ReminderService will run at {nextRunTime}.");
                         isReminderSent = false;
-                        await Task.Delay(delay, stoppingToken);                        
+                        await Task.Delay(delay, stoppingToken);
                     }
 
                     if (!isReminderSent)

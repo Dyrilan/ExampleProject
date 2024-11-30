@@ -9,7 +9,6 @@ namespace Example.DB.Configurations
     {
         public void Configure(EntityTypeBuilder<Borrowing> builder)
         {
-
             builder.HasKey(b => b.Id);
 
             builder.HasOne(b => b.User)

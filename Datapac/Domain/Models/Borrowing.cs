@@ -11,14 +11,13 @@ namespace Example.Domain.Models
         public required Guid BookId { get; init; }
         [ForeignKey("BookId")]
         public required Book Book { get; init; }
-
         
         public Guid UserId { get; set; }
         [ForeignKey("UserId")]
         public required User User { get; set; }
+
         [Required]
         public required DateTime BorrowingDate { get; set; }
-
         [Required]
         public required DateTime DueDate { get; init; }
         public DateTime? ReturnDate { get; set; }
