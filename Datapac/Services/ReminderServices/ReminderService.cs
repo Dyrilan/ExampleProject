@@ -4,6 +4,7 @@ using System.Text;
 
 namespace Example.Services.ReminderServices
 {
+    //Toto by sa malo riesit cez Windows Service alebo Azure Function ale pre ucely tohto projektu som to spravil cez BackgroundService
     public class ReminderService(ILogger<ReminderService> logger, IServiceScopeFactory serviceScopeFactory) : BackgroundService
     {
         private bool isReminderSent = false;
