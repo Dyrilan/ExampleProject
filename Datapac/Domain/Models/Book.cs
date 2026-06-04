@@ -6,7 +6,6 @@ namespace Example.Domain.Models
     {
         [Key]
         public Guid Id { get; set; } = Guid.NewGuid();
-        [Required]
         public required string Title { get; set; }        
     };
 }

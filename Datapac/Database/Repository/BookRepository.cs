@@ -1,45 +1,27 @@
-﻿using Example.DB.Repository.Interfaces;
-using Example.Domain.DTOs.BookDTOs;
+﻿using Example.Database.Repository.Interfaces;
 using Example.Domain.Models;
 
-namespace Example.DB.Repository
+using Microsoft.EntityFrameworkCore;
+
+namespace Example.Database.Repository
 {
     public class BookRepository(ExampleContext context) : IBookRepository
     {
-        public async Task AddBookAsync(AddBookDto book)
-        {
-            var newBook = new Book
-            {
-                Id = book.Id,
-                Title = book.Title,
-            };
+        public async Task AddAsync(Book book)
+            => await context.Books.AddAsync(book);
 
-            await context.Books.AddAsync(newBook);
-            await context.SaveAsync();
+        public void Delete(Book book)
+            => context.Books.Remove(book);
+
+        public async Task<Book?> GetByIdAsync(Guid id, bool track = true)
+        {
+            var query = context.Books.AsQueryable();
+            if (!track) query = query.AsNoTracking();
+
+            return await query.FirstOrDefaultAsync(b => b.Id == id);
         }
 
-        public async Task DeleteBookAsync(Guid id)
-        {
-            var bookToRemove = await context.Books.FindAsync(id);
-            if (bookToRemove != null)
-            {
-                context.Books.Remove(bookToRemove);
-                await context.SaveAsync();
-            }
-        }
-
-        public async Task<Book?> GetBookAsync(Guid id) 
-            => await context.Books.FindAsync(id);
-
-        public async Task UpdateBookAsync(UpdateBookDto book)
-        {
-            var bookToUpdate = await context.Books.FindAsync(book.Id);
-            if (bookToUpdate != null)
-            {
-                bookToUpdate.Title = book.Title;
-
-                await context.SaveAsync();
-            }                
-        }
+        public void Update(Book book)
+            => context.Books.Update(book);
     }
 }

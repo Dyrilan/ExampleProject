@@ -4,6 +4,6 @@ namespace Example.Services.BorrowingServices.Interfaces
 {
     public interface IReturnBorrowingService
     {
-        public Task<bool> HandlerAsync(ReturnBorrowingRequest request);
+        public Task HandlerAsync(ReturnBorrowingRequest request);
     }
 }

@@ -5,10 +5,10 @@ namespace Example.Domain.Messages.BorrowingMessages
     public record ReturnBorrowingRequest
     {
         [GuidNotEmpty]
-        public required Guid BookId { get; set; }
+        public Guid BookId { get; set; }
         [GuidNotEmpty]
-        public required Guid UserId { get; set; }
+        public Guid UserId { get; set; }
         [FutureDateTime]
-        public required DateTime ReturnDate { get; set; }
+        public DateTime ReturnDate { get; set; }
     }
 }

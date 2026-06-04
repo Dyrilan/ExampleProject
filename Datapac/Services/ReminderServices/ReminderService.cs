@@ -1,11 +1,12 @@
-﻿using Example.DB.Repository.Interfaces;
+﻿using Example.Database.Repository.Interfaces;
 using Example.Domain.DTOs.ReminderDTOs;
+
 using System.Text;
 
 namespace Example.Services.ReminderServices
 {
     //Toto by sa malo riesit cez Windows Service alebo Azure Function ale pre ucely tohto projektu som to spravil cez BackgroundService
-    public class ReminderService(ILogger<ReminderService> logger, IServiceScopeFactory serviceScopeFactory) : BackgroundService
+    public class ReminderService(ILogger<ReminderService> logger, IServiceScopeFactory serviceScopeFactory, IConfiguration configuration) : BackgroundService
     {
         private bool isReminderSent = false;
 
@@ -43,11 +44,8 @@ namespace Example.Services.ReminderServices
         {
             using var scope = serviceScopeFactory.CreateScope();
             var borrowingRepository = scope.ServiceProvider.GetRequiredService<IBorrowingRepository>();
-            var reminderBorrowings = borrowingRepository.GetReminderBorrowingsAsync();
-            await foreach (var reminder in reminderBorrowings)
-            {
-                await FakeSendEmail(reminder.Email, reminder.BorrowedBooks);
-            }
+            var reminderBorrowings = borrowingRepository.GetBorrowingsNeedingReminderAsync(configuration.GetSection("Values").GetValue<int>("RemindDueDays"));
+            await FakeSendEmails(reminderBorrowings);
 
             isReminderSent = true;
         }
@@ -56,29 +54,30 @@ namespace Example.Services.ReminderServices
         //Nevidim v tom ale velky zmysel a nechce sa mi kvoli tomu vytvarat ucet na sendgride.
         //Preto som sa rozhodol ze budem fakovat aj ked ste vyslovene ziadali nefakovat.
         //Predpokladam ze vam skorej islo o to aby som vytvoril event co bude bezat n-krat za den a hromadne posielat maily.
-        private async Task FakeSendEmail(string email, IEnumerable<ReminderBorrowedBookDto> borrowedBooks)
+        private async Task FakeSendEmails(IAsyncEnumerable<ReminderDto> borrowedBooks)
         {
-            if (email == null || !borrowedBooks.Any())
-                return;
-
-            var sb = new StringBuilder();
-
-            sb.AppendLine("Dear User,");
-            sb.AppendLine();
-            sb.AppendLine("You have the following books borrowed that are due soon:");
-            sb.AppendLine();
-
-            foreach (var book in borrowedBooks)
+            await foreach (var reminder in borrowedBooks)
             {
-                sb.AppendLine($"- \"{book.Title}\" due on {book.DueDate:dd.MM.yyyy}");
-            }
+                if (reminder.Email == null || !reminder.Books.Any())
+                    return;
 
-            sb.AppendLine();
-            sb.AppendLine("Please make sure to return them on time to avoid late fees.");
-            sb.AppendLine("Best regards,");
-            sb.AppendLine("Your Library Team");
+                var sb = new StringBuilder();
 
-            Console.WriteLine($"Email sent to {email}:\n{sb}");
+                sb.AppendLine("Dear User,");
+                sb.AppendLine();
+                sb.AppendLine("You have the following books borrowed that are due soon:");
+                sb.AppendLine();
+
+                foreach (var book in reminder.Books)
+                    sb.AppendLine($"- \"{book.Title}\" due on {book.DueDate:dd.MM.yyyy}");
+
+                sb.AppendLine();
+                sb.AppendLine("Please make sure to return them on time to avoid late fees.");
+                sb.AppendLine("Best regards,");
+                sb.AppendLine("Your Library Team");
+
+                Console.WriteLine($"Email sent to {reminder.Email}:\n{sb}");
+            }            
         }
     }
 }

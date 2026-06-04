@@ -1,14 +1,11 @@
 ﻿using Example.General.Attributes;
 
-using System.ComponentModel.DataAnnotations;
-
 namespace Example.Domain.Messages.BookMessages
 {
     public record UpdateBookRequest
     {
         [GuidNotEmpty]
-        public required Guid Id { get; set; }
-        [Required]
+        public Guid Id { get; set; }
         [AlphaNumberic]
         public required string Title { get; set; }
     };

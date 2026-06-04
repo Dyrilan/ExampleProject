@@ -1,13 +1,12 @@
-﻿using Example.Domain.DTOs.BookDTOs;
-using Example.Domain.Models;
+﻿using Example.Domain.Models;
 
-namespace Example.DB.Repository.Interfaces
+namespace Example.Database.Repository.Interfaces
 {
     public interface IBookRepository
     {
-        public Task<Book?> GetBookAsync(Guid id);
-        public Task AddBookAsync(AddBookDto book);
-        public Task UpdateBookAsync(UpdateBookDto book);
-        public Task DeleteBookAsync(Guid id);
+        public Task AddAsync(Book book);
+        public void Delete(Book book);
+        public Task<Book?> GetByIdAsync(Guid id, bool track = true);
+        public void Update(Book book);
     }
 }

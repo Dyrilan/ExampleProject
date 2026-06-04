@@ -1,24 +1,21 @@
-﻿using Example.DB.Repository.Interfaces;
-using Example.Domain.DTOs.BorrowingDtos;
+﻿using Example.Database.Repository.Interfaces;
 using Example.Domain.Messages.BorrowingMessages;
 using Example.Services.BorrowingServices.Interfaces;
 
 namespace Example.Services.BorrowingServices
 {
-    public class ReturnBorrowingService(IUserRepository userRepository, IBorrowingRepository borrowingRepository) : IReturnBorrowingService
+    public class ReturnBorrowingService(IBorrowingRepository borrowingRepository, IUnitOfWork unitOfWork) : IReturnBorrowingService
     {
-        public async Task<bool> HandlerAsync(ReturnBorrowingRequest request)
+        public async Task HandlerAsync(ReturnBorrowingRequest request)
         {
-            var user = await userRepository.GetUserAsync(request.UserId) ?? throw new Exception("User doesnt exist");
+            var borrowing = await borrowingRepository.GetActiveByBookIdAsync(request.BookId) 
+                ?? throw new Exception("Borrowing not found");
 
-            var returnBorrowingDto = new ReturnBorrowingDto
-            {
-                BookId = request.BookId,
-                User = user,
-                ReturnDate = request.ReturnDate
-            };
+            if (borrowing.UserId != request.UserId)
+                throw new Exception("User is not correct");
 
-            return await borrowingRepository.ReturnBorrowingAsync(returnBorrowingDto);
+            borrowing.ReturnDate = request.ReturnDate;
+            await unitOfWork.CommitAsync();
         }
     }
 }

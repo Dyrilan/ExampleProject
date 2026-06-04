@@ -6,9 +6,9 @@ namespace Example.Domain.Models
     public record Borrowing
     {
         [Key]
-        public required Guid Id { get; set; }
+        public Guid Id { get; set; }
                 
-        public required Guid BookId { get; init; }
+        public Guid BookId { get; init; }
         [ForeignKey("BookId")]
         public required Book Book { get; init; }
         
@@ -16,10 +16,16 @@ namespace Example.Domain.Models
         [ForeignKey("UserId")]
         public required User User { get; set; }
 
-        [Required]
-        public required DateTime BorrowingDate { get; set; }
-        [Required]
-        public required DateTime DueDate { get; init; }
+        public DateTime BorrowingDate { get; set; }
+        public DateTime DueDate { get; init; }
         public DateTime? ReturnDate { get; set; }
+
+        public bool IsAvailable()
+        {
+            if (DueDate <= DateTime.UtcNow || ReturnDate <= DateTime.UtcNow)
+                return true;
+
+            return false;
+        }
     }    
 }

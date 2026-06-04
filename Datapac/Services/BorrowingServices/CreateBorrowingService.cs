@@ -1,25 +1,32 @@
-﻿using Example.DB.Repository.Interfaces;
-using Example.Domain.DTOs.BorrowingDtos;
+﻿using Example.Database.Repository.Interfaces;
+using Example.DB.Repository.Interfaces;
 using Example.Domain.Messages.BorrowingMessages;
+using Example.Domain.Models;
 using Example.Services.BorrowingServices.Interfaces;
 
 namespace Example.Services.BorrowingServices
 {
-    public class CreateBorrowingService(IBookRepository bookRepository, IUserRepository userRepository, IBorrowingRepository borrowingRepository) : ICreateBorrowingService
+    public class CreateBorrowingService(IBookRepository bookRepository, IUserRepository userRepository, IBorrowingRepository borrowingRepository, IUnitOfWork unitOfWork) : ICreateBorrowingService
     {
         public async Task HandlerAsync(CreateBorrowingRequest request)
         {
-            var book = await bookRepository.GetBookAsync(request.BookId) ?? throw new Exception("Book doesnt exist");
-            var user = await userRepository.GetUserAsync(request.UserId) ?? throw new Exception("User doesnt exist");
+            var bookTask = bookRepository.GetByIdAsync(request.BookId);
+            var userTask = userRepository.GetUserAsync(request.UserId);
 
-            var newBorrowing = new AddBorrowingDto
+            await Task.WhenAll(bookTask, userTask);
+
+            var book = await bookTask ?? throw new Exception("Book not found");
+            var user = await userTask ?? throw new Exception("User not found");
+
+            var newBorrowing = new Borrowing
             {               
                 DueDate = request.DueDate,
                 Book = book,
                 User = user
             };
 
-            await borrowingRepository.AddBorrowingAsync(newBorrowing);
+            await borrowingRepository.AddAsync(newBorrowing);
+            await unitOfWork.CommitAsync();
         }
     }
 }

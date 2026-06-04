@@ -1,6 +1,5 @@
 ﻿using Example.Domain.Messages.BorrowingMessages;
 using Example.General.ApiHelpers;
-using Example.General.TypedApi;
 using Example.Services.BorrowingServices.Interfaces;
 
 using Microsoft.AspNetCore.Mvc;
@@ -13,10 +12,12 @@ namespace Example.Controllers
     {
         [HttpPost(Name = "CreateBorrowing")]
         public Task<IActionResult> Book(CreateBorrowingRequest request) 
-            => RequestHandler.HandleRequestAsync(() => serviceProvider.GetRequiredService<ICreateBorrowingService>().HandlerAsync(request), logger);
+            => RequestHandler.HandleRequestAsync(() 
+                => serviceProvider.GetRequiredService<ICreateBorrowingService>().HandlerAsync(request), logger);
         
         [HttpPut(Name = "ReturnBorrowing")]
-        public Task<IObjectResult<bool>> Book(ReturnBorrowingRequest request)
-            => RequestHandler.HandleRequestAsync(() => serviceProvider.GetRequiredService<IReturnBorrowingService>().HandlerAsync(request), logger);
+        public Task<IActionResult> Book(ReturnBorrowingRequest request)
+            => RequestHandler.HandleRequestAsync(() 
+                => serviceProvider.GetRequiredService<IReturnBorrowingService>().HandlerAsync(request), logger);
     }
 }

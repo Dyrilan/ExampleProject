@@ -1,30 +1,23 @@
-﻿using Example.DB.Repository.Interfaces;
-using Example.Domain.DTOs.BookDTOs;
+﻿using Example.Database.Repository.Interfaces;
 using Example.Domain.Messages.BookMessages;
 using Example.Services.BookServices.Interfaces;
 
 namespace Example.Services.BookServices
 {
-    public class CreateBookService(IBookRepository bookRepository) : ICreateBookService
+    public class CreateBookService(IBookRepository bookRepository, IUnitOfWork unitOfWork) : ICreateBookService
     {
         public async Task<CreateBookResponse> HandlerAsync(CreateBookRequest request)
         {
-            var book = new AddBookDto
+            var book = new Domain.Models.Book
             {
-                Id = Guid.NewGuid(),
                 Title = request.Title,
             };
 
-            await bookRepository.AddBookAsync(book);
+            await bookRepository.AddAsync(book);
 
-            var newBook = new CreateBookResponse
-            {
-                Id = book.Id,
-                Title = request.Title,
-                Available = true,
-            };            
+            await unitOfWork.CommitAsync();
 
-            return newBook;
+            return CreateBookResponse.FromModel(book);
         }
     }
 }

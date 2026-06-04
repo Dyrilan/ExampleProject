@@ -1,27 +1,22 @@
-﻿using Example.DB.Repository.Interfaces;
-using Example.Domain.DTOs.BookDTOs;
+﻿using Example.Database.Repository.Interfaces;
 using Example.Domain.Messages.BookMessages;
 using Example.Services.BookServices.Interfaces;
 
 namespace Example.Services.BookServices
 {
-    public class UpdateBookService(IBookRepository bookRepository) : IUpdateBookService
+    public class UpdateBookService(IBookRepository bookRepository, IUnitOfWork unitOfWork) : IUpdateBookService
     {
         public async Task<UpdateBookResponse> HandlerAsync(UpdateBookRequest request)
         {
-            var newBook = new UpdateBookDto
-            {
-                Id = request.Id,
-                Title = request.Title,
-            };
+            var book = await bookRepository.GetByIdAsync(request.Id)
+                ?? throw new Exception("Book not found");
 
-            await bookRepository.UpdateBookAsync(newBook);
+            book.Title = request.Title;
 
-            return new UpdateBookResponse
-            {
-                Id = newBook.Id,
-                Title = newBook.Title
-            };
+            bookRepository.Update(book);
+            await unitOfWork.CommitAsync();
+
+            return UpdateBookResponse.FromModel(book);
         }
     }
 }

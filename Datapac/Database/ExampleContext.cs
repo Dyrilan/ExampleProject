@@ -2,7 +2,7 @@
 
 using Microsoft.EntityFrameworkCore;
 
-namespace Example.DB
+namespace Example.Database
 {
     public class ExampleContext(DbContextOptions<ExampleContext> options) : DbContext(options)//, IExampleContext
     {
@@ -15,9 +15,6 @@ namespace Example.DB
             modelBuilder.Entity<Book>();
             modelBuilder.Entity<User>();
             modelBuilder.Entity<Borrowing>();
-        }        
-
-        public async Task SaveAsync() 
-            => await base.SaveChangesAsync();
+        }
     }
 }

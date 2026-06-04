@@ -3,7 +3,7 @@ using Example.Domain.Models;
 
 using Microsoft.EntityFrameworkCore;
 
-namespace Example.DB.Repository
+namespace Example.Database.Repository
 {
     public class UserRepository(ExampleContext context) : IUserRepository
     {
