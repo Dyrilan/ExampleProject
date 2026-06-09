@@ -17,10 +17,8 @@ namespace Example.Controllers
             => RequestHandler.HandleRequestAsync(() => serviceProvider.GetRequiredService<ICreateBookService>().HandlerAsync(request), logger);
 
         [HttpGet(Name = "GetBook")]
-        public Task<IObjectResult<GetBookResponse>> Book([FromQuery][GuidNotEmpty] Guid id)
-        {
-            return RequestHandler.HandleRequestAsync(() => serviceProvider.GetRequiredService<IGetBookService>().HandlerAsync(id), logger);
-        }
+        public Task<IObjectResult<GetBookResponse>> Book([FromQuery][GuidNotEmpty] Guid id) 
+            => RequestHandler.HandleRequestAsync(() => serviceProvider.GetRequiredService<IGetBookService>().HandlerAsync(id), logger);
 
         [HttpPut(Name = "UpdateBook")]
         public Task<IObjectResult<UpdateBookResponse>> Book(UpdateBookRequest request)

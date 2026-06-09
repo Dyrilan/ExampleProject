@@ -28,13 +28,13 @@ builder.Services.AddScoped<IBorrowingRepository, BorrowingRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
-builder.Services.AddTransient<ICreateBookService, CreateBookService>();
-builder.Services.AddTransient<IUpdateBookService, UpdateBookService>();
-builder.Services.AddTransient<IGetBookService, GetBookService>();
-builder.Services.AddTransient<IDeleteBookService, DeleteBookService>();
+builder.Services.AddScoped<ICreateBookService, CreateBookService>();
+builder.Services.AddScoped<IUpdateBookService, UpdateBookService>();
+builder.Services.AddScoped<IGetBookService, GetBookService>();
+builder.Services.AddScoped<IDeleteBookService, DeleteBookService>();
 
-builder.Services.AddTransient<ICreateBorrowingService, CreateBorrowingService>();
-builder.Services.AddTransient<IReturnBorrowingService, ReturnBorrowingService>();
+builder.Services.AddScoped<ICreateBorrowingService, CreateBorrowingService>();
+builder.Services.AddScoped<IReturnBorrowingService, ReturnBorrowingService>();
 
 var app = builder.Build();
 
